@@ -5,27 +5,42 @@ import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
 
 
-main =
-    Browser.sandbox { init = 0, update = update, view = view }
+type Player
+  = NoPlayer
+  | X
+  | O
 
+type alias Model =
+  { buttonValue : Player }
+
+init : Model
+init =
+  { buttonValue = NoPlayer }
+
+playerToString p =
+  case p of
+    X -> "X"
+    O -> "O"
+    NoPlayer -> "-"
+
+main =
+    Browser.sandbox { init = init, update = update, view = view }
 
 type Msg
-    = Increment
-    | Decrement
+    = Flip
 
-
+update: Msg -> Model -> Model
 update msg model =
     case msg of
-        Increment ->
-            model + 1
+        Flip ->
+          if model.buttonValue == X then
+            { model | buttonValue = O }
+          else
+            { model | buttonValue = X }
 
-        Decrement ->
-            model - 1
-
-
+view: Model -> Html Msg
 view model =
-    div []
-        [ button [ onClick Decrement ] [ text "-" ]
-        , div [] [ text (String.fromInt model) ]
-        , button [ onClick Increment ] [ text "+" ]
-        ]
+  div []
+    [
+      button [ onClick Flip ] [ text (playerToString model.buttonValue) ]
+    ]
